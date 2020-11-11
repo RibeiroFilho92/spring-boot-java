@@ -3,6 +3,8 @@ package com.contact.first.services;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -43,9 +45,13 @@ public class UserService {
 	}
 	
 	public User update(Long ID, User u) {
-		User entity = repository.getOne(ID);
-		updateData(entity, u);
-		return repository.save(entity);
+		try {
+			User entity = repository.getOne(ID);
+			updateData(entity, u);
+			return repository.save(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourseNotFoundException(e.getMessage());
+		}
 	}
 
 	private void updateData(User entity, User u) {
